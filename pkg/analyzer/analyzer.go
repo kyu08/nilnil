@@ -77,7 +77,7 @@ func (n *nilNil) run(pass *analysis.Pass) (interface{}, error) {
 		case *ast.ReturnStmt:
 			ft := fs.Top() // Current function.
 
-			if !push || len(v.Results) != 2 || ft == nil || ft.Results == nil || len(ft.Results.List) != 2 {
+			if !push || ft == nil || ft.Results == nil {
 				return false
 			}
 
@@ -98,8 +98,8 @@ func (n *nilNil) run(pass *analysis.Pass) (interface{}, error) {
 
 			retVal, retErr := v.Results[0], v.Results[1]
 
-			if ((zv == zeroValueNil) && isNil(pass, retVal) && isNil(pass, retErr)) ||
-				((zv == zeroValueZero) && isZero(retVal) && isNil(pass, retErr)) {
+			if ((zv == zeroValueNil) && isNil(pass, retVal) && isNil(pass, retErr)) && isNil(pass, v.Results[2]) ||
+				((zv == zeroValueZero) && isZero(retVal) && isNil(pass, retErr)) && isNil(pass, v.Results[2]) {
 				pass.Reportf(v.Pos(), nilNilReportMsg)
 				return false
 			}
